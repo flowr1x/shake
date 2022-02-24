@@ -1,0 +1,34 @@
+// Varialbles
+$color-dark: rgb(32, 32, 32);
+$color-green: #86d86a;
+$color-red: #ee8695;
+$color-orange: #fbbbad;
+$color-text: #fff;
+
+body {
+    background: $color-dark;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+.wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .score__window {
+        height: 50px;
+        width: 200px;
+        margin-bottom: 20px;
+        border: 5px solid $color-green;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: $color-text;
+    }
+    .canvas {
+        border: 5px solid $color-green;
+    }
+}
