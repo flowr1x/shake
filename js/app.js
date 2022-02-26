@@ -1,12 +1,12 @@
 const canvas = document.querySelector(".canvas"),
-      scoreElement = document.querySelector(".score__number"), 
+      scoreElement = document.querySelector(".score"), 
       context = canvas.getContext("2d"),
       
       config = {
         step: 0,
-        maxStep: 8,
+        maxStep: 6,
         sizeCell: 16,
-        sizeBerry: this.sizeCell / 4,
+        sizeBerry: 4,
       },
 
       shake = {
@@ -16,7 +16,14 @@ const canvas = document.querySelector(".canvas"),
         dy: 0,
         tails: [],
         maxTails: 3,
-      };
+      },
+
+      speed = {
+        "20": 5,
+        "40": 4,
+        "60": 3,
+        "80": 2
+      };    
 
 let berry = {
     x: 0,
@@ -25,6 +32,7 @@ let berry = {
 
 let score = 0;
 showScore();
+randomPositionBerry();
 function gameLoop() {
     requestAnimationFrame(gameLoop);
         
@@ -35,6 +43,8 @@ function gameLoop() {
     
     context.clearRect(0, 0, canvas.width, canvas.height);
     
+    if (speed[score]) config.maxStep = speed[score]; // Увеличение скорости 
+
     drawShake();
     drawBerry();
 }
@@ -47,17 +57,17 @@ function drawShake() {
 
     collisionBorder();
 
-    shake.tails.unshift({ x: shake.x, y: shake.y });
+    shake.tails.unshift( { x: shake.x, y: shake.y } );
 
     if (shake.tails.length > shake.maxTails) shake.tails.pop();
 
     shake.tails.forEach((item, index) => {
-        context.fillStyle = index == 0 ? "red" : "blue";
+        context.fillStyle = "#86d86a";
         context.fillRect(item.x, item.y, config.sizeCell, config.sizeCell);
     
         const equalPosition = (berry.x == item.x) && (berry.y == item.y);
         if (equalPosition) {
-            shake.maxStep += 1;    
+            shake.maxTails += 1;    
             addScore();
             randomPositionBerry();
         }
@@ -72,6 +82,7 @@ function drawShake() {
     });
 }
 
+// Collision
 function collisionBorder() {
     if (canvas.width <= shake.x) shake.x = 0;
     if (canvas.height <= shake.y) shake.y = 0;
@@ -88,46 +99,65 @@ function showScore() {
     scoreElement.innerHTML = score;
 }
 
+// Draw berry function
 function drawBerry() {
-
+    context.fillStyle = "#86d86a";
+    context.fillRect(berry.x + (config.sizeCell / 2 - 1), berry.y + (config.sizeCell / 2 - 1), config.sizeBerry, config.sizeBerry);
 }
 
+// Create position berry 
 function randomPositionBerry() {
-    berry.x = random()
+    berry.x = getRandom(0, canvas.width / config.sizeCell) * config.sizeCell;
+    berry.y = getRandom(0, canvas.height / config.sizeCell) * config.sizeCell;
 }
 
+// Null function 
 function gameOver() {
-    // todo
+    shake.tails = [];
+    shake.maxTails = 3;
+    shake.x = 16;
+    shake.y = 16;
+
+    config.maxStep = 6;
+    score = 0;
+    showScore();
 }
-const random = (min, max) => Math.floor(min + Math.random() * (max-min+1));
+
+// Random number function
+function getRandom(min, max) {
+     return Math.floor(min + Math.random() * (max-min));
+}
 
 
-window.addEventListener("keydown", (event) => {
+// Move shake
+window.addEventListener("keydown", moveShake);
+
+let isMove = true;
+function moveShake(event) {
+    if (!isMove) return;
     switch(event.code) {
-        case "ArrowLeft":
-            console.log("left");
-            
+        case "ArrowLeft":      
             if (shake.dx > 0 && shake.dy == 0) return;
             shake.dx = -config.sizeCell;
             shake.dy = 0;
             break;
         case "ArrowRight":
-            console.log("right");
             if (shake.dx < 0 && shake.dy == 0) return;
             shake.dx = config.sizeCell;
             shake.dy = 0;
             break;
         case "ArrowDown":
-            console.log("down");
             if (shake.dx == 0 && shake.dy < 0) return;
             shake.dx = 0;
             shake.dy = config.sizeCell;
             break;
         case "ArrowUp":
-            console.log("up");
             if (shake.dx == 0 && shake.dy > 0) return;
             shake.dx = 0;
             shake.dy = -config.sizeCell;
             break;        
     }
-});
+    
+    isMove = false;
+    setTimeout(() => isMove = true, 80);
+}

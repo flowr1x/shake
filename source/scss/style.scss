@@ -32,3 +32,11 @@ body {
         border: 5px solid $color-green;
     }
 }
+
+.gameover {
+    min-height: 100px;
+    min-width: 200px;
+    background: #fff;
+    color: #fff;
+    font-size: 18px;
+}
